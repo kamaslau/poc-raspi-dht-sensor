@@ -10,7 +10,7 @@ sudo sh -c 'echo "dtoverlay=dht11,gpiopin=4" >> /boot/firmware/config.txt'
 sudo reboot
 
 # Init .env file, modify and use your own InfluxDB Cloud tokens
-cp .env.sample .env
+cp .env.example .env
 
 # Do reading
 go mod tidy
