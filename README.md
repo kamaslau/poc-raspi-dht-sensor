@@ -1,6 +1,6 @@
 # poc-raspi-dht-sensor
 
-Reads a DHT11 sensor on a Raspberry Pi and writes temperature and humidity to InfluxDB Cloud every 60 seconds. A technical demonstration of the edge-to-cloud path, not a production agent.
+Reads a DHT11/DHT22 sensor on a Raspberry Pi and writes temperature and humidity to InfluxDB Cloud every 60 seconds. A technical demonstration of the edge-to-cloud path, not a production agent.
 
 ## Usage
 
@@ -13,9 +13,6 @@ sudo reboot
 
 # Init .env, then fill in the three TS_* values (see .env.example)
 cp .env.example .env
-
-# Read
-go mod tidy
 go run ./...
 
 # Build the executable the unit below runs
