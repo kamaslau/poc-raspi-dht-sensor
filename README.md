@@ -1,4 +1,4 @@
-# iot-client
+# poc-raspi-dht-sensor
 
 Reads a DHT11 sensor on a Raspberry Pi and writes temperature and humidity to InfluxDB Cloud every 60 seconds. A technical demonstration of the edge-to-cloud path, not a production agent.
 
@@ -27,13 +27,13 @@ The process exits when the time series store is not usable — missing `TS_*` va
 ## Run in background
 
 ```bash
-cd ~/iot-client && nohup ./tmp/main > output.log 2>&1 &
+cd ~/poc-raspi-dht-sensor && nohup ./tmp/main > output.log 2>&1 &
 ```
 
 ## Run on OS start
 
 ```bash
-sudo nano /etc/systemd/system/iot-client.service
+sudo nano /etc/systemd/system/poc-raspi-dht-sensor.service
 ```
 
 ```ini
@@ -43,10 +43,10 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/home/pi/iot-client/tmp/main
+ExecStart=/home/pi/poc-raspi-dht-sensor/tmp/main
 Restart=always
 User=pi
-WorkingDirectory=/home/pi/iot-client
+WorkingDirectory=/home/pi/poc-raspi-dht-sensor
 
 [Install]
 WantedBy=multi-user.target
@@ -57,9 +57,9 @@ WantedBy=multi-user.target
 Then enable and start it:
 
 ```bash
-sudo systemctl enable iot-client.service
-sudo systemctl start iot-client.service
-sudo systemctl status iot-client.service
+sudo systemctl enable poc-raspi-dht-sensor.service
+sudo systemctl start poc-raspi-dht-sensor.service
+sudo systemctl status poc-raspi-dht-sensor.service
 ```
 
 ---
