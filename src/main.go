@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"app/src/drivers"
@@ -12,39 +13,55 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// loadEnv Load env variable(s) from .env file
+// loadEnv loads .env into the process environment. Missing credentials are
+// reported by ConnectTS, which names the variables that were not set.
 func loadEnv() {
 	if err := godotenv.Load(".env"); err != nil {
-		log.Fatalf("Fail loading .env: %s", err)
+		log.Fatalf("Fail loading .env: %s (copy .env.example to .env first)", err)
 	}
 }
 
-// Initiate Service Components first, fail fast so we can break early
-func initServices() {
-	drivers.ConnectTS() // Warning on failure
+// initServices brings the dependencies up before the first reading. It returns
+// an error rather than logging and continuing: a reader without a writable time
+// series store would loop forever and report nothing.
+func initServices() error {
+	return drivers.ConnectTS()
 }
 
-func readIIO(path string) float64 {
+func readIIO(path string) (float64, bool) {
 	b, err := os.ReadFile(path)
-	if err != nil || len(b) == 0 {
-		return -999
+	if err != nil {
+		return 0, false
 	}
-	v, _ := strconv.Atoi(string(b[:len(b)-1]))
-	return float64(v) / 1000.0
+
+	raw := strings.TrimSpace(string(b))
+	if raw == "" {
+		return 0, false
+	}
+
+	v, err := strconv.Atoi(raw)
+	if err != nil {
+		return 0, false
+	}
+
+	return float64(v) / 1000.0, true
 }
 
 func main() {
 	loadEnv()
-	initServices()
+	if err := initServices(); err != nil {
+		log.Fatalf("⛔ %s", err)
+	}
 
 	const (
 		tempPath = "/sys/bus/iio/devices/iio:device0/in_temp_input"
 		humPath  = "/sys/bus/iio/devices/iio:device0/in_humidityrelative_input"
 	)
+
 	for {
-		t := readIIO(tempPath)
-		h := readIIO(humPath)
-		if t == -999 || h == -999 {
+		t, tempOK := readIIO(tempPath)
+		h, humOK := readIIO(humPath)
+		if !tempOK || !humOK {
 			fmt.Println("driver is not ready, retry...")
 			time.Sleep(1 * time.Second)
 			continue

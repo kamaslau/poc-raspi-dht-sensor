@@ -1,62 +1,67 @@
-# README.md
+# iot-client
+
+Reads a DHT11 sensor on a Raspberry Pi and writes temperature and humidity to InfluxDB Cloud every 60 seconds. A technical demonstration of the edge-to-cloud path, not a production agent.
 
 ## Usage
 
-Connect GPIO4 pin with sensor data output, together with 3.3V and GND pins.
+Connect GPIO4 to the sensor's data output, plus 3.3 V and GND.
 
 ```bash
-# Mount overlay to GPIO 4, and persist it between reboots
+# Mount the overlay on GPIO 4 and persist it across reboots
 sudo sh -c 'echo "dtoverlay=dht11,gpiopin=4" >> /boot/firmware/config.txt'
 sudo reboot
 
-# Init .env file, modify and use your own InfluxDB Cloud tokens
+# Init .env, then fill in the three TS_* values (see .env.example)
 cp .env.example .env
 
-# Do reading
+# Read
 go mod tidy
 go run ./...
 
-# Build executable
-go build ./src/main.go # Output file will be placed under ./tmp
+# Build the executable the unit below runs
+mkdir -p tmp && go build -o ./tmp/main ./src
 ```
+
+The process exits when the time series store is not usable — missing `TS_*` values, a rejected token, or a failed first write. It does not keep collecting into nothing; the error names what is wrong.
 
 ## Run in background
 
 ```bash
-cd ./Demos/golang-gpio && nohup ./tmp/main > output.log 2>&1 &
+cd ~/iot-client && nohup ./tmp/main > output.log 2>&1 &
 ```
 
 ## Run on OS start
 
-Use with systemd:
-
 ```bash
-# Initiate systemd config file
-sudo nano /etc/systemd/system/golang-gpio.service
+sudo nano /etc/systemd/system/iot-client.service
 ```
 
 ```ini
 [Unit]
-Description=Golang-GPIO
-After=network.target
+Description=IoT client (DHT11 to InfluxDB)
+After=network-online.target
+Wants=network-online.target
 
 [Service]
-ExecStart=/home/pi/Demos/golang-gpio/tmp/main
+ExecStart=/home/pi/iot-client/tmp/main
 Restart=always
 User=pi
-WorkingDirectory=/home/pi/Demos/golang-gpio
+WorkingDirectory=/home/pi/iot-client
 
 [Install]
 WantedBy=multi-user.target
 ```
 
-After that, enable service and start for the first time:
+`After=network-online.target` rather than `network.target`: the service needs a resolved hostname and a route, not just a configured interface.
+
+Then enable and start it:
 
 ```bash
-# Enable & start service
-sudo systemctl enable golang-gpio.service
-sudo systemctl start golang-gpio.service
-
-# Check status
-sudo systemctl status golang-gpio.service
+sudo systemctl enable iot-client.service
+sudo systemctl start iot-client.service
+sudo systemctl status iot-client.service
 ```
+
+---
+
+Built by [Kamas Lau](https://www.kamaslau.com/works?utm_source=github&utm_medium=repo-readme&utm_campaign=always-on&utm_content=poc) — I do this for foreign companies operating in China, on their own infrastructure.

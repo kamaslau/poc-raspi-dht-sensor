@@ -19,7 +19,7 @@
 
 # Env files
 .env*
-!.env.sample
+!.env.example
 
 # Misc
 tmp
