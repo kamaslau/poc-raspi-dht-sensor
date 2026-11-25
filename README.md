@@ -40,14 +40,16 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/home/pi/poc-raspi-dht-sensor/tmp/main
+ExecStart=/home/pi/Apps/poc-raspi-dht-sensor/tmp/main
 Restart=always
 User=pi
-WorkingDirectory=/home/pi/poc-raspi-dht-sensor
+WorkingDirectory=/home/pi/Apps/poc-raspi-dht-sensor
 
 [Install]
 WantedBy=multi-user.target
 ```
+
+Note that the path and user should match your situation. Run `systemctl daemon-reload` after modify the `.service` file.
 
 `After=network-online.target` rather than `network.target`: the service needs a resolved hostname and a route, not just a configured interface.
 

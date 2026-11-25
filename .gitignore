@@ -24,6 +24,7 @@
 # Misc
 tmp
 *.zip
+output.log
 
 # IDEs
 .idea
