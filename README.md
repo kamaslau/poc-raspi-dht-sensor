@@ -1,6 +1,6 @@
 # poc-raspi-dht-sensor
 
-Reads a DHT11/DHT22 sensor on a Raspberry Pi and writes temperature and humidity to InfluxDB Cloud every 60 seconds. A technical demonstration of the edge-to-cloud path, not a production agent.
+Reads a DHT11/DHT22 sensor on a Raspberry Pi and writes temperature and humidity to [InfluxDB Cloud Serverless](https://us-east-1-1.aws.cloud2.influxdata.com/) every 60 seconds. A technical demonstration of the edge-to-cloud path, not a production agent.
 
 ## Usage
 

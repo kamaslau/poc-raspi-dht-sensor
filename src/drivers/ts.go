@@ -21,13 +21,13 @@ var TSClient *influxdb3.Client
 func ConnectTS() error {
 	host := os.Getenv("TS_HOST")
 	token := os.Getenv("TS_TOKEN")
-	database := os.Getenv("TS_DATABASE")
+	database := os.Getenv("TS_BUCKET")
 
 	var missing []string
 	for _, item := range []struct{ name, value string }{
 		{"TS_HOST", host},
 		{"TS_TOKEN", token},
-		{"TS_DATABASE", database},
+		{"TS_BUCKET", database},
 	} {
 		if item.value == "" {
 			missing = append(missing, item.name)
