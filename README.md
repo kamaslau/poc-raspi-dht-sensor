@@ -20,21 +20,39 @@ Full feature tested on:
 
 Connect Raspberry Pi device pins with sensor pins, better when power-offed:
 
-| Raspberry Pi | Sensor |
-|------------------|------------|
-| GPIO4            | DAT or out |
-| GND              | GND or - |
-| 3V3              | VCC or + |
+```text
+┌──────────────────┐             ┌──────────────────┐
+│   Raspberry Pi   │             │      Sensor      │
+│                  │             │                  │
+│   GPIO4  ●───────┼─────────────┼────● DAT / out   │
+│                  │             │                  │
+│   GND    ●───────┼─────────────┼────● GND / -     │
+│                  │             │                  │
+│   3V3    ●───────┼─────────────┼────● VCC / +     │
+│                  │             │                  │
+└──────────────────┘             └──────────────────┘
+```
 
-If there is a `NC` pin on the DHT22 sensor board, ignore it. It is a physical placeholder required by the protocal of AM2302 that DHT22 follows, no output at all.
+Below is the GPIO names with pin number of the first 10 Raspberry Pi pins, the SD slot is to the left in direction.
 
-> Use [`pinout` cli command](https://kamaslau.wordpress.com/2026/10/31/cli-commands-for-inspecting-raspberry-pi/) to map GPTO pin names with physical (J8) pins through a graphic.
+> `pinout` can be used to echo complete GPIO infomation and other board infomation, as is detailed in the post [Cli Commands for Inspecting Raspberry Pi - Kamas Lau](https://kamaslau.wordpress.com/2026/10/31/cli-commands-for-inspecting-raspberry-pi/).
+
+```text
+   3V3  (1) (2)  5V    
+ GPIO2  (3) (4)  5V    
+ GPIO3  (5) (6)  GND   
+ GPIO4  (7) (8)  GPIO14
+   GND  (9) (10) GPIO15
+```
+
+If there is a `NC` pin on the DHT22 sensor board, just ignore it. It is a physical placeholder required by the protocal of AM2302 that DHT22 follows, no output at all.
 
 ```bash
 # Mount the overlay on GPIO 4 and persist it across reboots
 sudo sh -c 'echo "dtoverlay=dht11,gpiopin=4" >> /boot/firmware/config.txt'
 sudo reboot
 
+# Enter the dir where this repository is cloned to
 # Init .env, then fill in the three TS_* values (see .env.example)
 cp .env.example .env
 go run ./...
