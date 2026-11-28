@@ -17,7 +17,7 @@ require (
 	github.com/pierrec/lz4/v4 v4.1.34 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/zeebo/xxh3 v1.1.0 // indirect
-	golang.org/x/exp v0.0.0-20261127181632-b10a66b71b35 // indirect
+	golang.org/x/exp v0.0.0-20261128033645-f63ec7c7eed0 // indirect
 	golang.org/x/net v0.63.0 // indirect
 	golang.org/x/sys v0.50.0 // indirect
 	golang.org/x/text v0.44.0 // indirect
